@@ -108,4 +108,51 @@
       position: fixed;
       bottom: 88px; right: 16px;
       width: 56px; height: 56px;
-      border-radius: 50%; background
+      border-radius: 50%; background: #C8102E;
+      border: none; cursor: pointer; z-index: 998;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .faq-icon { width: 28px; height: 28px; filter: brightness(0) invert(1); }
+
+    /* Modales */
+    .modal-overlay {
+      position: fixed; top: 0; bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.4); display: none; z-index: 1000;
+    }
+    .modal-overlay.show { display: block; }
+    .bottom-sheet {
+      position: fixed; bottom: -100%; left: 0; right: 0;
+      background: white; border-top-left-radius: 24px; border-top-right-radius: 24px;
+      padding: 24px; transition: bottom 0.3s ease-out;
+    }
+    .bottom-sheet.show { bottom: 0; }
+    .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+
+    /* MODO ACCESIBLE HIGH CONTRAST */
+    body.accessible-mode {
+      background-color: #121212 !important;
+      color: #FFFFFF !important;
+    }
+    body.accessible-mode .card,
+    body.accessible-mode .bottom-nav,
+    body.accessible-mode .category-btn {
+      background-color: #1C1C1E !important;
+      border: 2px solid #FFFFFF !important;
+      color: #FFFFFF !important;
+    }
+    body.accessible-mode .input {
+      background-color: #1C1C1E !important;
+      color: #FFFFFF !important;
+      border: 2px solid #FFFFFF !important;
+    }
+    body.accessible-mode .nav-item { color: #E5E5EA !important; }
+    body.accessible-mode .nav-item.active { color: #FF453A !important; text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <div id="app"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
