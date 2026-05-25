@@ -4,10 +4,108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UL-Reporta</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div id="app" class="app-container"></div>
-  <script src="app.js"></script>
-</body>
-</html>
+  <style>
+    /* Estilos Base Obligatorios para tu App */
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #F4F4F6;
+      color: #1C1C1E;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .page {
+      min-height: 100vh;
+      box-sizing: border-box;
+      padding-bottom: 100px; /* Espacio para que la navegación no tape el contenido */
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .input-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+    .input-label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 16px;
+      border: 1px solid #E5E5EA;
+      border-radius: 12px;
+      font-size: 16px;
+      background: white;
+    }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary { background: #C8102E; color: white; }
+    .btn-secondary { background: #E5E5EA; color: #1C1C1E; }
+    .btn-tertiary { background: #2C2C2E; color: white; }
+    .hidden { display: none !important; }
+    
+    /* Grid de categorías */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .category-btn {
+      background: white;
+      border: 2px solid #E5E5EA;
+      border-radius: 16px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .category-btn.selected { border-color: #C8102E; background: #FFF5F5; }
+    .category-img, .pqrs-icon { width: 32px; height: 32px; object-fit: contain; }
+
+    /* Barra de Navegación Inferior */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 72px;
+      background: white;
+      border-top: 1px solid #E5E5EA;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+    }
+    .nav-item {
+      background: none; border: none;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      color: #8E8E93; font-size: 12px; cursor: pointer;
+    }
+    .nav-item.active { color: #C8102E; font-weight: bold; }
+    .nav-icon { width: 24px; height: 24px; object-fit: contain; }
+
+    /* Botón Flotante FAQ */
+    .faq-floating-btn {
+      position: fixed;
+      bottom: 88px; right: 16px;
+      width: 56px; height: 56px;
+      border-radius: 50%; background
