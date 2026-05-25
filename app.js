@@ -41,6 +41,8 @@ function saveState() {
   localStorage.setItem('pqrs', JSON.stringify(AppState.pqrs));
   if (AppState.reportDraft) {
     localStorage.setItem('reportDraft', JSON.stringify(AppState.reportDraft));
+  } else {
+    localStorage.removeItem('reportDraft');
   }
 }
 
@@ -52,6 +54,7 @@ function navigate(page) {
 
 function renderPage() {
   const app = document.getElementById('app');
+  if (!app) return;
 
   switch(AppState.currentPage){
     case 'login':
@@ -79,7 +82,7 @@ function renderPage() {
   if(AppState.currentPage !== 'login'){
     app.innerHTML += `
       <button class="faq-floating-btn" onclick="showFAQ()">
-        <img src="imagenes/19.png" class="faq-icon" alt="Preguntas frecuentes">
+        <img src="./imagenes/19.png" class="faq-icon" alt="Preguntas frecuentes">
       </button>
     `;
   }
@@ -126,7 +129,10 @@ function renderLogin() {
 }
 
 function attachLoginListener() {
-  document.getElementById('loginForm').addEventListener('submit', (e) => {
+  const form = document.getElementById('loginForm');
+  if (!form) return;
+
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
@@ -176,17 +182,17 @@ function renderDashboard() {
 
       <div style="display:flex; flex-direction:column; gap:16px;">
         <button onclick="navigate('create-report')" class="btn btn-primary dashboard-btn">
-          <img src="imagenes/7.png" class="dashboard-icon">
+          <img src="./imagenes/7.png" class="dashboard-icon">
           Crear Reporte
         </button>
 
         <button onclick="navigate('tracking')" class="btn btn-secondary dashboard-btn">
-          <img src="imagenes/8.png" class="dashboard-icon">
+          <img src="./imagenes/8.png" class="dashboard-icon">
           Mis Reportes e Historial
         </button>
 
         <button onclick="toggleAccessibleMode()" class="btn btn-tertiary dashboard-btn">
-          <img src="imagenes/9.png" class="dashboard-icon">
+          <img src="./imagenes/9.png" class="dashboard-icon">
           ${a ? 'Modo Normal' : 'Modo Accesible'}
         </button>
       </div>
@@ -198,40 +204,36 @@ function renderDashboard() {
 function renderCreateReport() {
   const a = AppState.isAccessibleMode;
   const draft = AppState.reportDraft || { category: null, description: '', location: '' };
+  
+  if (draft.category && !selectedCategory) {
+    selectedCategory = draft.category;
+  }
+
+  const categories = [
+    { name: "Infraestructura", img: "./imagenes/1.png", selectedImg: "./imagenes/1.1.png" },
+    { name: "Rampas",          img: "./imagenes/2.png", selectedImg: "./imagenes/2.1.png" },
+    { name: "Ascensor",        img: "./imagenes/3.png", selectedImg: "./imagenes/3.1.png" },
+    { name: "Iluminación",     img: "./imagenes/4.png", selectedImg: "./imagenes/4.1.png" },
+    { name: "Baños",           img: "./imagenes/5.png", selectedImg: "./imagenes/5.1.png" },
+    { name: "Señalización",    img: "./imagenes/6.png", selectedImg: "./imagenes/6.1.png" }
+  ];
 
   return `
     <div class="page" style="background: ${a ? '#121212' : '#F4F4F6'};">
       <h1 style="font-size: ${a ? '32px' : '24px'}; font-weight: 600; color: ${a ? 'white' : '#1C1C1E'}; margin-bottom: 24px;">Crear Reporte</h1>
 
       <h2 style="font-size: ${a ? '24px' : '16px'}; font-weight: 600; margin-bottom: 16px; color: ${a ? 'white' : '#1C1C1E'};">1. Categoría</h2>
-        <div class="category-grid">
-        ${[
-          { name:"Infraestructura", img:"1.png", selectedImg:"1.1.png" },
-          { name:"Rampas",          img:"2.png", selectedImg:"2.1.png" },
-          { name:"Ascensor",         img:"3.png", selectedImg:"3.1.png" },
-          { name:"Iluminación",     img:"4.png", selectedImg:"4.1.png" },
-          { name:"Baños",            img:"5.png", selectedImg:"5.1.png" },
-          { name:"Señalización",    img:"6.png", selectedImg:"6.1.png" }
-        ].map(cat => {
-          // Genera la ruta correcta de manera automática para GitHub Pages
-          const imgUrl = `./imagenes/${cat.img}`;
-          const selectedImgUrl = `./imagenes/${cat.selectedImg}`;
-  
-  // Aquí continúas con tu código de retorno HTML usando las nuevas constantes
-  return `
-    <div class="category-item">
-      <img src="${imgUrl}" data-selected="${selectedImgUrl}">
-      <span>${cat.name}</span>
-    </div>
-  `;
-})}
-
-          <button class="category-btn ${draft.category === cat.name ? 'selected' : ''}" onclick="selectCategory('${cat.name}')">
-            <img src="${draft.category === cat.name ? cat.selectedImg : cat.img}" class="category-img" data-normal="${cat.img}" data-selected="${cat.selectedImg}">
-            <span>${cat.name}</span>
-          </button>
-        `).join('')}
-        </div>
+      <div class="category-grid">
+        ${categories.map(cat => {
+          const isSelected = selectedCategory === cat.name;
+          return `
+            <button class="category-btn ${isSelected ? 'selected' : ''}" onclick="selectCategory('${cat.name}')">
+              <img src="${isSelected ? cat.selectedImg : cat.img}" class="category-img" data-normal="${cat.img}" data-selected="${cat.selectedImg}">
+              <span>${cat.name}</span>
+            </button>
+          `;
+        }).join('')}
+      </div>
 
       <h2 style="font-size: ${a ? '24px' : '16px'}; font-weight: 600; margin-bottom: 16px; color: ${a ? 'white' : '#1C1C1E'};">2. Descripción</h2>
       <textarea id="description" class="input mb-3" rows="${a ? 6 : 4}" placeholder="Describe el problema..." style="border-radius: 24px;" oninput="saveDraft()">${draft.description}</textarea>
@@ -257,11 +259,9 @@ function renderCreateReport() {
   `;
 }
 
-/* HISTORIAL COMPLETO: Combina registros con acciones de Editar y Eliminar */
 function renderTracking() {
   const a = AppState.isAccessibleMode;
 
-  // Unificamos y estructuramos Reportes
   const formattedReports = AppState.reports.map(r => ({
     id: r.id,
     date: r.date,
@@ -273,7 +273,6 @@ function renderTracking() {
     badgeTextColor: '#D4AF37'
   }));
 
-  // Unificamos y estructuramos PQRS
   const formattedPQRS = AppState.pqrs.map(p => ({
     id: p.id,
     date: p.date,
@@ -286,7 +285,6 @@ function renderTracking() {
     badgeTextColor: '#0056B3'
   }));
 
-  // Orden cronológico
   const combinedList = [...formattedReports, ...formattedPQRS].sort((x, y) => new Date(y.date) - new Date(x.date));
 
   return `
@@ -302,10 +300,9 @@ function renderTracking() {
           const isEditing = editingItemId === item.id;
           const labelColor = a ? '#ffffff' : (item.itemType === 'Reporte' ? '#C8102E' : '#00875A');
           
-          // MODO FORMULARIO DE EDICIÓN
           if (isEditing) {
             return `
-              <div class="card" style="border: 2px solid #C8102E;">
+              <div class="card" style="border: 2px solid #C8102E; margin-bottom: 16px; background: ${a ? '#1C1C1E' : 'white'}; padding: 16px; border-radius: 16px;">
                 <div style="margin-bottom: 12px;">
                   <span style="color: ${labelColor}; font-weight: 700; font-size: 13px;">✏️ EDITANDO ${item.itemType.toUpperCase()}</span>
                 </div>
@@ -328,9 +325,8 @@ function renderTracking() {
             `;
           }
 
-          // MODO VISTA TARJETA NORMAL (Con botones de gestión abajo a la izquierda)
           return `
-            <div class="card">
+            <div class="card" style="margin-bottom: 16px; background: ${a ? '#1C1C1E' : 'white'}; padding: 16px; border-radius: 16px;">
               <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
                 <span style="color: ${labelColor}; font-weight: 700; font-size: 13px; letter-spacing: 0.5px;">📌 ${item.itemType.toUpperCase()}</span>
                 <span style="color: #8E8E93; font-size: 13px;">${new Date(item.date).toLocaleDateString()}</span>
@@ -402,44 +398,46 @@ function saveInlineEdit(id, type) {
   renderPage();
 }
 
-/* NUEVA FUNCIÓN: Elimina de forma permanente un elemento por su ID y Tipo */
 function deleteItem(id, type) {
   const mensajeConfirmacion = `¿Estás completamente seguro de que deseas eliminar este ${type.toLowerCase()}? Esta acción no se puede deshacer.`;
   
   if (confirm(mensajeConfirmacion)) {
     if (type === 'Reporte') {
-      // Filtramos dejando fuera el ID que coincide
       AppState.reports = AppState.reports.filter(r => r.id !== id);
     } else {
-      // Filtramos dejando fuera el ID que coincide en las PQRS
       AppState.pqrs = AppState.pqrs.filter(p => p.id !== id);
     }
 
-    saveState(); // Persiste el nuevo listado limpio en LocalStorage
+    saveState();
     alert('¡El registro fue eliminado con éxito!');
-    renderPage(); // Refresca la pantalla para que desaparezca la tarjeta
+    renderPage();
   }
 }
 
 function renderPQRS() {
   const a = AppState.isAccessibleMode;
+  const pqrsTypes = [
+    { name: 'petición',   img: './imagenes/15.png', active: './imagenes/15.png' },
+    { name: 'queja',      img: './imagenes/16.png', active: './imagenes/16.png' },
+    { name: 'reclamo',    img: './imagenes/17.png', active: './imagenes/17.1.png' },
+    { name: 'sugerencia', img: './imagenes/18.png', active: './imagenes/18.png' }
+  ];
+
   return `
     <div class="page" style="background: ${a ? '#121212' : '#F4F4F6'};">
       <h1 style="font-size: ${a ? '32px' : '24px'}; font-weight: 600; color: ${a ? 'white' : '#1C1C1E'}; margin-bottom: 24px;">Nueva PQRS</h1>
 
       <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: ${a ? 'white' : '#1C1C1E'};">1. Tipo</h2>
       <div class="category-grid">
-      ${[
-        {name:'petición',img:'imagenes/15.png'},
-        {name:'queja',img:'imagenes/16.png'},
-        {name:'reclamo',img:'imagenes/17.png',active:'imagenes/17.1.png'},
-        {name:'sugerencia',img:'imagenes/18.png'}
-      ].map(item=>`
-        <button class="category-btn" id="pqrs-${item.name}" onclick="selectPQRSType('${item.name}')">
-          <img class="pqrs-icon" src="${item.img}" data-normal="${item.img}" data-active="${item.active || item.img}">
-          <span>${item.name.charAt(0).toUpperCase()+item.name.slice(1)}</span>
-        </button>
-      `).join('')}
+        ${pqrsTypes.map(item => {
+          const isSelected = selectedPQRSType === item.name;
+          return `
+            <button class="category-btn ${isSelected ? 'selected' : ''}" id="pqrs-${item.name}" onclick="selectPQRSType('${item.name}')">
+              <img class="pqrs-icon" src="${isSelected ? item.active : item.img}" data-normal="${item.img}" data-active="${item.active}">
+              <span>${item.name.charAt(0).toUpperCase() + item.name.slice(1)}</span>
+            </button>
+          `;
+        }).join('')}
       </div>
 
       <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: ${a ? 'white' : '#1C1C1E'};">2. Asunto</h2>
@@ -510,6 +508,7 @@ function saveProfileData() {
     return;
   }
 
+  if (!AppState.currentUser) AppState.currentUser = {};
   AppState.currentUser.name = newName;
   AppState.currentUser.email = newEmail;
   AppState.currentUser.phone = newPhone;
@@ -521,11 +520,11 @@ function saveProfileData() {
 
 function renderBottomNav(current) {
   const items = [
-    { page: 'dashboard', label: 'Inicio', activeImg: 'imagenes/10.png', inactiveImg: 'imagenes/10.1.png' },
-    { page: 'create-report', label: 'Crear', activeImg: 'imagenes/11.1.png', inactiveImg: 'imagenes/11.png' },
-    { page: 'tracking', label: 'Historial', activeImg: 'imagenes/12.1.png', inactiveImg: 'imagenes/12.png' },
-    { page: 'pqrs', label: 'PQRS', activeImg: 'imagenes/13.1.png', inactiveImg: 'imagenes/13.png' },
-    { page: 'profile', label: 'Perfil', activeImg: 'imagenes/14.1.png', inactiveImg: 'imagenes/14.png' }
+    { page: 'dashboard',     label: 'Inicio',    activeImg: './imagenes/10.png',   inactiveImg: './imagenes/10.1.png' },
+    { page: 'create-report', label: 'Crear',     activeImg: './imagenes/11.1.png', inactiveImg: './imagenes/11.png' },
+    { page: 'tracking',      label: 'Historial', activeImg: './imagenes/12.1.png', inactiveImg: './imagenes/12.png' },
+    { page: 'pqrs',          label: 'PQRS',      activeImg: './imagenes/13.1.png', inactiveImg: './imagenes/13.png' },
+    { page: 'profile',       label: 'Perfil',    activeImg: './imagenes/14.1.png', inactiveImg: './imagenes/14.png' }
   ];
   return `
     <nav class="bottom-nav">
@@ -552,20 +551,26 @@ function selectCategory(cat){
   document.querySelectorAll('.category-img').forEach(img => {
     img.src = img.dataset.normal;
   });
+  
   document.querySelectorAll('.category-btn').forEach(btn => {
     if(btn.textContent.includes(cat)){
       btn.classList.add('selected');
       const img = btn.querySelector('.category-img');
-      img.src = img.dataset.selected;
+      if (img) img.src = img.dataset.selected;
     }
   });
   saveDraft();
 }
 
 function detectLocation() {
-  document.getElementById('locationDisplay').classList.remove('hidden');
-  document.getElementById('locationText').textContent = 'Campus Central - Edificio B, Piso 2';
-  saveDraft();
+  const locDisplay = document.getElementById('locationDisplay');
+  const locText = document.getElementById('locationText');
+  
+  if (locDisplay && locText) {
+    locDisplay.classList.remove('hidden');
+    locText.textContent = 'Campus Central - Edificio B, Piso 2';
+    saveDraft();
+  }
 }
 
 function saveDraft() {
@@ -580,17 +585,20 @@ function saveDraft() {
 }
 
 function submitReport() {
-  const desc = document.getElementById('description').value;
+  const descElement = document.getElementById('description');
+  const desc = descElement ? descElement.value : '';
+  
   if (!selectedCategory || !desc) {
     showErrorModal();
     return;
   }
 
+  const locElement = document.getElementById('locationText');
   AppState.reports.push({
     id: `RPT-${Date.now()}`,
     category: selectedCategory,
     description: desc,
-    location: document.getElementById('locationText')?.textContent || 'No especificada',
+    location: locElement ? locElement.textContent : 'No especificada',
     status: 'revision',
     date: new Date().toISOString()
   });
@@ -604,33 +612,41 @@ function submitReport() {
 
 function showErrorModal() {
   const modal = document.getElementById('errorModal');
+  if (!modal) return;
   const sheet = modal.querySelector('.bottom-sheet');
   modal.classList.add('show');
-  setTimeout(() => sheet.classList.add('show'), 10);
+  if (sheet) setTimeout(() => sheet.classList.add('show'), 10);
 }
 
 function closeErrorModal() {
   const modal = document.getElementById('errorModal');
+  if (!modal) return;
   const sheet = modal.querySelector('.bottom-sheet');
-  sheet.classList.remove('show');
+  if (sheet) sheet.classList.remove('show');
   setTimeout(() => modal.classList.remove('show'), 300);
 }
 
 function selectPQRSType(type){
   selectedPQRSType = type;
-  document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('selected'));
+  document.querySelectorAll('.category-grid .category-btn').forEach(btn => btn.classList.remove('selected'));
   document.querySelectorAll('.pqrs-icon').forEach(img => {
     img.src = img.dataset.normal;
   });
+  
   const btn = document.getElementById(`pqrs-${type}`);
-  btn.classList.add('selected');
-  const img = btn.querySelector('.pqrs-icon');
-  img.src = img.dataset.active;
+  if (btn) {
+    btn.classList.add('selected');
+    const img = btn.querySelector('.pqrs-icon');
+    if (img) img.src = img.dataset.active;
+  }
 }
 
 function submitPQRS() {
-  const subject = document.getElementById('pqrsSubject').value;
-  const desc = document.getElementById('pqrsDescription').value;
+  const subjectElement = document.getElementById('pqrsSubject');
+  const descElement = document.getElementById('pqrsDescription');
+  
+  const subject = subjectElement ? subjectElement.value : '';
+  const desc = descElement ? descElement.value : '';
 
   if (!selectedPQRSType || !subject || !desc) {
     alert('Completa todos los campos');
