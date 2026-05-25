@@ -206,13 +206,26 @@ function renderCreateReport() {
       <h2 style="font-size: ${a ? '24px' : '16px'}; font-weight: 600; margin-bottom: 16px; color: ${a ? 'white' : '#1C1C1E'};">1. Categoría</h2>
         <div class="category-grid">
         ${[
-          { name:"Infraestructura", img:"imagenes/1.png", selectedImg:"imagenes/1.1.png" },
-          { name:"Rampas", img:"imagenes/2.png", selectedImg:"imagenes/2.1.png" },
-          { name:"Ascensor", img:"imagenes/3.png", selectedImg:"imagenes/3.1.png" },
-          { name:"Iluminación", img:"imagenes/4.png", selectedImg:"imagenes/4.1.png" },
-          { name:"Baños", img:"imagenes/5.png", selectedImg:"imagenes/5.1.png" },
-          { name:"Señalización", img:"imagenes/6.png", selectedImg:"imagenes/6.1.png" }
-        ].map(cat => `
+          { name:"Infraestructura", img:"1.png", selectedImg:"1.1.png" },
+          { name:"Rampas",          img:"2.png", selectedImg:"2.1.png" },
+          { name:"Ascensor",         img:"3.png", selectedImg:"3.1.png" },
+          { name:"Iluminación",     img:"4.png", selectedImg:"4.1.png" },
+          { name:"Baños",            img:"5.png", selectedImg:"5.1.png" },
+          { name:"Señalización",    img:"6.png", selectedImg:"6.1.png" }
+        ].map(cat => {
+          // Genera la ruta correcta de manera automática para GitHub Pages
+          const imgUrl = `./imagenes/${cat.img}`;
+          const selectedImgUrl = `./imagenes/${cat.selectedImg}`;
+  
+  // Aquí continúas con tu código de retorno HTML usando las nuevas constantes
+  return `
+    <div class="category-item">
+      <img src="${imgUrl}" data-selected="${selectedImgUrl}">
+      <span>${cat.name}</span>
+    </div>
+  `;
+})}
+
           <button class="category-btn ${draft.category === cat.name ? 'selected' : ''}" onclick="selectCategory('${cat.name}')">
             <img src="${draft.category === cat.name ? cat.selectedImg : cat.img}" class="category-img" data-normal="${cat.img}" data-selected="${cat.selectedImg}">
             <span>${cat.name}</span>
