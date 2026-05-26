@@ -1,5 +1,5 @@
 const AppState = {
-  currentUser: null,
+  currentUser: null, // Guardará { email, name, phone, role }
   isAccessibleMode: false,
   currentPage: 'login',
   reports: [],
@@ -101,6 +101,7 @@ function navigate(page) {
   else if (page === 'tracking') currentSectionId = 'view-tracking';
   else if (page === 'pqrs') currentSectionId = 'view-pqrs';
   else if (page === 'profile') currentSectionId = 'view-profile';
+  else if (page === 'admin') currentSectionId = 'view-admin';
 
   const activeSection = document.getElementById(currentSectionId);
   if (activeSection) activeSection.classList.remove('hidden');
@@ -108,7 +109,8 @@ function navigate(page) {
   const bottomNav = document.getElementById('app-bottom-nav');
   const faqBtn = document.getElementById('app-faq-btn');
 
-  if (page === 'login') {
+  
+  if (page === 'login' || page === 'admin') {
     if (bottomNav) bottomNav.classList.add('hidden');
     if (faqBtn) faqBtn.classList.add('hidden');
   } else {
@@ -117,9 +119,11 @@ function navigate(page) {
     updateBottomNavUI(page);
   }
 
+
   if (page === 'create-report') syncCreateReportView();
   else if (page === 'tracking') renderTrackingList();
   else if (page === 'profile') syncProfileView();
+  else if (page === 'admin') renderAdminDashboard();
   else if (page === 'dashboard') {
     const accessText = document.getElementById('txt-accessibility-mode');
     if (accessText) accessText.textContent = AppState.isAccessibleMode ? 'Modo Normal' : 'Modo Accesible';
@@ -219,9 +223,12 @@ function submitReport() {
 
   AppState.reports.push({
     id: `RPT-${Date.now()}`,
+    userEmail: AppState.currentUser.email, // Registro de dueño
+    userName: AppState.currentUser.name,
     category: selectedCategory,
     description: desc,
     location: locText ? locText.textContent : 'No especificada',
+    status: 'En revisión', // Estado inicial ajustable por admin
     date: new Date().toISOString()
   });
 
@@ -244,8 +251,12 @@ function renderTrackingList() {
 
   container.innerHTML = ''; 
 
-  const formattedReports = AppState.reports.map(r => ({ ...r, origin: 'Reporte', title: r.category }));
-  const formattedPQRS = AppState.pqrs.map(p => ({ ...p, origin: 'PQRS', title: `${p.type.toUpperCase()}: ${p.subject}` }));
+  // Filtrar para que el usuario solo vea lo que él mismo creó
+  const myReports = AppState.reports.filter(r => r.userEmail === AppState.currentUser.email);
+  const myPQRS = AppState.pqrs.filter(p => p.userEmail === AppState.currentUser.email);
+
+  const formattedReports = myReports.map(r => ({ ...r, origin: 'Reporte', title: r.category }));
+  const formattedPQRS = myPQRS.map(p => ({ ...p, origin: 'PQRS', title: `${p.type.toUpperCase()}: ${p.subject}` }));
   const combined = [...formattedReports, ...formattedPQRS].sort((x, y) => new Date(y.date) - new Date(x.date));
 
   if (counter) counter.textContent = `Tienes ${combined.length} registros en total`;
@@ -382,7 +393,7 @@ function renderTrackingList() {
 
       const badge = document.createElement('span');
       badge.className = 'status-badge';
-      badge.textContent = item.origin === 'Reporte' ? 'En revisión' : 'Pendiente';
+      badge.textContent = item.status || (item.origin === 'Reporte' ? 'En revisión' : 'Pendiente');
 
       footerRow.appendChild(actionsDiv);
       footerRow.appendChild(badge);
@@ -466,10 +477,12 @@ function submitPQRS() {
 
   AppState.pqrs.push({
     id: `PQRS-${Date.now()}`,
+    userEmail: AppState.currentUser.email, // Dueño del PQRS
+    userName: AppState.currentUser.name,
     type: selectedPQRSType,
     subject: subject,
     description: desc,
-    status: 'pendiente',
+    status: 'Pendiente',
     date: new Date().toISOString()
   });
 
@@ -499,22 +512,141 @@ function syncProfileView() {
 
 function saveProfileData() {
   const nameVal = document.getElementById('profileName').value.trim();
-  const emailVal = document.getElementById('profileEmail').value.trim();
   const phoneVal = document.getElementById('profilePhone').value.trim();
 
-  if (!nameVal || !emailVal) {
-    showToast('El nombre y correo no pueden quedar vacíos');
+  if (!nameVal) {
+    showToast('El nombre no puede quedar vacío');
     return;
   }
 
   AppState.currentUser.name = nameVal;
-  AppState.currentUser.email = emailVal;
   AppState.currentUser.phone = phoneVal;
 
   saveState();
   showToast('¡Datos de perfil actualizados correctamente!');
   navigate('dashboard');
 }
+
+
+
+function renderAdminDashboard() {
+  const container = document.getElementById('admin-list-container');
+  const counter = document.getElementById('admin-counter');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+
+  const formattedReports = AppState.reports.map(r => ({ ...r, origin: 'Reporte', title: r.category }));
+  const formattedPQRS = AppState.pqrs.map(p => ({ ...p, origin: 'PQRS', title: `${p.type.toUpperCase()}: ${p.subject}` }));
+  const globalItems = [...formattedReports, ...formattedPQRS].sort((x, y) => new Date(y.date) - new Date(x.date));
+
+  if (counter) counter.textContent = `Hay ${globalItems.length} requerimientos globales en el sistema`;
+
+  if (globalItems.length === 0) {
+    container.innerHTML = `<div class="text-center p-4 card"><p style="color:#8E8E93;">No hay requerimientos en la plataforma.</p></div>`;
+    return;
+  }
+
+  globalItems.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.borderLeft = item.origin === 'Reporte' ? '5px solid #C8102E' : '5px solid #00875A';
+
+
+    const topRow = document.createElement('div');
+    topRow.style.display = 'flex';
+    topRow.style.justifyContent = 'space-between';
+    topRow.style.fontSize = '12px';
+    topRow.style.color = '#8E8E93';
+    topRow.innerHTML = `<span><b>${item.origin.toUpperCase()}</b> (${item.id})</span> <span>${new Date(item.date).toLocaleDateString()}</span>`;
+    card.appendChild(topRow);
+
+
+    const userBox = document.createElement('div');
+    userBox.style.margin = '8px 0';
+    userBox.style.padding = '6px 10px';
+    userBox.style.background = '#f2f2f7';
+    userBox.style.borderRadius = '6px';
+    userBox.style.fontSize = '13px';
+    userBox.innerHTML = `👤 <b>Usuario:</b> ${item.userName || 'No registrado'} <br> ✉️ <b>Email:</b> ${item.userEmail}`;
+    card.appendChild(userBox);
+
+    // Título y Descripción del problema
+    const h3 = document.createElement('h3');
+    h3.style.fontSize = '16px';
+    h3.style.margin = '6px 0';
+    h3.textContent = item.title;
+    card.appendChild(h3);
+
+    const pDesc = document.createElement('p');
+    pDesc.style.fontSize = '14px';
+    pDesc.style.color = '#48484A';
+    pDesc.style.marginBottom = '12px';
+    pDesc.textContent = item.description;
+    card.appendChild(pDesc);
+
+    if (item.location && item.origin === 'Reporte') {
+      const pLoc = document.createElement('p');
+      pLoc.style.fontSize = '12px';
+      pLoc.style.color = '#8E8E93';
+      pLoc.textContent = `📍 Ubicación: ${item.location}`;
+      card.appendChild(pLoc);
+    }
+
+  
+    const actionsRow = document.createElement('div');
+    actionsRow.style.display = 'flex';
+    actionsRow.style.justifyContent = 'space-between';
+    actionsRow.style.alignItems = 'center';
+    actionsRow.style.marginTop = '12px';
+    actionsRow.style.borderTop = '1px solid #E5E5EA';
+    actionsRow.style.paddingTop = '8px';
+
+    const labelStatus = document.createElement('label');
+    labelStatus.style.fontSize = '13px';
+    labelStatus.style.fontWeight = '600';
+    labelStatus.textContent = 'Cambiar Estado: ';
+
+    const selectStatus = document.createElement('select');
+    selectStatus.style.padding = '4px 8px';
+    selectStatus.style.borderRadius = '4px';
+    selectStatus.style.border = '1px solid #C7C7CC';
+    
+  
+    const states = item.origin === 'Reporte' ? ['En revisión', 'Asignado', 'Resuelto'] : ['Pendiente', 'En Trámite', 'Respondido'];
+    states.forEach(st => {
+      const opt = document.createElement('option');
+      opt.value = st;
+      opt.textContent = st;
+      if((item.status || states[0]) === st) opt.selected = true;
+      selectStatus.appendChild(opt);
+    });
+
+    selectStatus.onchange = (e) => updateItemStatusByAdmin(item.id, item.origin, e.target.value);
+
+    labelStatus.appendChild(selectStatus);
+    actionsRow.appendChild(labelStatus);
+    card.appendChild(actionsRow);
+
+    container.appendChild(card);
+  });
+}
+
+function updateItemStatusByAdmin(id, origin, newStatus) {
+  if (origin === 'Reporte') {
+    const idx = AppState.reports.findIndex(r => r.id === id);
+    if (idx !== -1) AppState.reports[idx].status = newStatus;
+  } else {
+    const idx = AppState.pqrs.findIndex(p => p.id === id);
+    if (idx !== -1) AppState.pqrs[idx].status = newStatus;
+  }
+  saveState();
+  showToast('Estado actualizado con éxito');
+  renderAdminDashboard();
+}
+
+
 
 function toggleAccessibleMode() {
   AppState.isAccessibleMode = !AppState.isAccessibleMode;
@@ -547,28 +679,56 @@ document.addEventListener('DOMContentLoaded', () => {
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value.trim();
       const errorDiv = document.getElementById('loginError');
+      const errorTxt = document.getElementById('loginErrorText');
 
       if(errorDiv) errorDiv.classList.add('hidden');
 
-      if (password.length < 4) {
-        if(errorDiv) errorDiv.classList.remove('hidden');
+
+      if (!email.endsWith('@unlibre.edu.co')) {
+        if(errorDiv && errorTxt) {
+          errorTxt.textContent = 'Acceso denegado. Solo correos @unlibre.edu.co';
+          errorDiv.classList.remove('hidden');
+        }
         return;
       }
 
-      AppState.currentUser = {
-        email: email,
-        name: email.split('@')[0],
-        phone: '3001234567'
-      };
+ 
+      if (password.length < 4) {
+        if(errorDiv && errorTxt) {
+          errorTxt.textContent = 'Contraseña mínimo 4 caracteres';
+          errorDiv.classList.remove('hidden');
+        }
+        return;
+      }
 
-      saveState();
-      navigate('dashboard');
+
+      if (email === 'admin@unlibre.edu.co') {
+        AppState.currentUser = {
+          email: email,
+          name: 'Administrador UL',
+          phone: 'N/A',
+          role: 'admin'
+        };
+        saveState();
+        navigate('admin');
+      } else {
+        
+        AppState.currentUser = {
+          email: email,
+          name: email.split('@')[0],
+          phone: '3001234567',
+          role: 'user'
+        };
+        saveState();
+        navigate('dashboard');
+      }
     });
   }
 
+  // Interceptores de clicks de navegación comunes
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
       navigate(btn.getAttribute('data-target'));
@@ -591,6 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-submit-pqrs')?.addEventListener('click', submitPQRS);
   document.getElementById('btn-save-profile')?.addEventListener('click', saveProfileData);
   document.getElementById('btn-logout')?.addEventListener('click', confirmLogout);
+  document.getElementById('btn-logout-admin')?.addEventListener('click', confirmLogout); // Botón de logout admin
   document.getElementById('app-faq-btn')?.addEventListener('click', showFAQ);
 
   document.getElementById('app-modal-cancel')?.addEventListener('click', closeAppModal);
@@ -599,5 +760,14 @@ document.addEventListener('DOMContentLoaded', () => {
     closeAppModal();
   });
 
-  navigate(AppState.currentUser ? 'dashboard' : 'login');
+  // Redirección inteligente al arrancar
+  if (AppState.currentUser) {
+    if (AppState.currentUser.role === 'admin') {
+      navigate('admin');
+    } else {
+      navigate('dashboard');
+    }
+  } else {
+    navigate('login');
+  }
 });
