@@ -687,9 +687,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if(errorDiv) errorDiv.classList.add('hidden');
 
 
-      if (!email.endsWith('@unlibre.edu.co')) {
+      if (!email.endsWith('@unilibre.edu.co')) {
         if(errorDiv && errorTxt) {
-          errorTxt.textContent = 'Acceso denegado. Solo correos @unlibre.edu.co';
+          errorTxt.textContent = 'Acceso denegado. Solo correos @unilibre.edu.co';
           errorDiv.classList.remove('hidden');
         }
         return;
@@ -705,7 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
 
-      if (email === 'admin@unlibre.edu.co') {
+      if (email === 'admin@unilibre.edu.co') {
         AppState.currentUser = {
           email: email,
           name: 'Administrador UL',
