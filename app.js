@@ -12,7 +12,7 @@ let selectedPQRSType = null;
 let editingItemId = null; 
 let onModalConfirmCallback = null;
 
-// --- SISTEMA DE DIÁLOGOS Y NOTIFICACIONES PERSONALIZADAS ---
+
 
 function showToast(message) {
   const toast = document.getElementById('app-toast');
@@ -51,7 +51,7 @@ function closeAppModal() {
   onModalConfirmCallback = null;
 }
 
-// --- PERSISTENCIA Y MANEJO DE VISTAS ---
+
 
 function loadState() {
   const savedUser = localStorage.getItem('currentUser');
@@ -92,7 +92,7 @@ function navigate(page) {
   AppState.currentPage = page;
   editingItemId = null;
 
-  // Ocultar de manera limpia todas las secciones del documento
+
   document.querySelectorAll('.page').forEach(sec => sec.classList.add('hidden'));
 
   let currentSectionId = 'view-login';
@@ -141,7 +141,7 @@ function updateBottomNavUI(activePage) {
   }
 }
 
-// --- LOGICA DE CREACIÓN DE REPORTES ---
+
 
 function syncCreateReportView() {
   const draft = AppState.reportDraft || { category: null, description: '', location: '' };
@@ -235,7 +235,7 @@ function submitReport() {
   navigate('tracking');
 }
 
-// --- CONSTRUCCIÓN DE LA SOLICITUD E HISTORIAL MEDIANTE NODOS ---
+
 
 function renderTrackingList() {
   const container = document.getElementById('requests-list-container');
@@ -434,7 +434,7 @@ function requestDeleteItem(id, origin) {
   );
 }
 
-// --- LOGICA DEL FORMULARIO PQRS ---
+
 
 function selectPQRSType(type) {
   selectedPQRSType = type;
@@ -483,7 +483,7 @@ function submitPQRS() {
   navigate('tracking');
 }
 
-// --- LOGICA DE MI PERFIL ---
+
 
 function syncProfileView() {
   const emailDisplay = document.getElementById('profileEmail');
@@ -538,7 +538,7 @@ function confirmLogout() {
   });
 }
 
-// --- CONFIGURACIÓN DE LISTENERS AL CARGAR ---
+
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
