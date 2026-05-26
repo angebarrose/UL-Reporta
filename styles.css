@@ -14,10 +14,12 @@ body {
   min-height: 100vh;
 }
 
-
+/* ==========================================================================
+   CONTENEDOR PRINCIPAL (Responsivo)
+   ========================================================================== */
 .app-container {
   width: 100%;
-  max-width: 100%; /* Cambiado de 450px a 100% para ocupar toda la pantalla en móviles */
+  max-width: 100%; /* Ocupa toda la pantalla en móviles */
   background: white;
   min-height: 100vh;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
@@ -27,21 +29,21 @@ body {
   margin: 0 auto;
 }
 
-
+/* Modo accesible global */
 body.accessible-mode, 
 body.accessible-mode .app-container {
   background: #121212;
   color: #ffffff;
 }
 
-
+/* Páginas y Secciones */
 .page {
   width: 100%;
   padding: 32px 20px 140px; /* Padding fijo sin porcentajes para evitar desbordes */
   flex: 1;
 }
 
-
+/* Cabeceras de Login y Marcas */
 .brand-badge {
   width: 90px; 
   height: 90px; 
@@ -73,7 +75,7 @@ body.accessible-mode .app-container {
 body.accessible-mode .main-title { color: white; font-size: 30px; }
 body.accessible-mode .subtitle { color: #E5E5EA; font-size: 17px; }
 
-
+/* Botonera */
 .btn {
   display: flex;
   align-items: center;
@@ -111,7 +113,7 @@ body.accessible-mode .btn-primary { background: #E1062C; border: 2px solid #ffff
 body.accessible-mode .btn-secondary { background: #1C1C1E; color: #ffffff; border: 2px solid #D4AF37; }
 body.accessible-mode .btn-tertiary { background: #D4AF37; color: #121212; border: 2px solid #ffffff; }
 
-
+/* Formularios */
 .input-group { margin-bottom: 24px; }
 .input-label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #1C1C1E; }
 .input {
@@ -132,12 +134,12 @@ textarea.input { resize: none; line-height: 1.6; }
 body.accessible-mode .input { background: #1C1C1E; color: #ffffff; border: 2px solid #ffffff; font-size: 18px; }
 body.accessible-mode .input-label { color: #D4AF37; font-size: 18px; }
 
-
+/* Dashboard */
 .dashboard-actions { display: flex; flex-direction: column; gap: 16px; }
 .dashboard-btn { gap: 12px; }
 .dashboard-icon { width: 26px; height: 26px; object-fit: contain; }
 
-
+/* Grid de Categorías (2 columnas por defecto en móvil) */
 .section-title { font-size: 22px; font-weight: 600; margin-bottom: 20px; }
 .step-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
 .category-grid {
@@ -171,25 +173,25 @@ body.accessible-mode .input-label { color: #D4AF37; font-size: 18px; }
 body.accessible-mode .category-btn { background: #1C1C1E; color: #ffffff; border: 2px solid #ffffff; font-size: 17px; }
 body.accessible-mode .category-btn.selected { background: #E1062C; border-color: #D4AF37; }
 
-
+/* Ubicación y Mensajes */
 .location-box { padding: 14px; background: white; border: 2px solid #E5E5EA; border-radius: 16px; margin-bottom: 24px; }
 body.accessible-mode .location-box { background: #1C1C1E; border-color: white; }
 .alert { display: flex; gap: 12px; padding: 14px; border-radius: 16px; background: #FFF1F1; border: 1px solid #C8102E; margin-bottom: 20px; }
 .alert-text { font-size: 14px; color: #C8102E; font-weight: 500; }
 
-
+/* Tarjetas */
 .card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 16px; border: 1px solid #E5E5EA; }
 body.accessible-mode .card { background: #1C1C1E; border: 2px solid #ffffff; }
 .status-badge { padding: 6px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; background: #FFF9E6; color: #D4AF37; }
 
-
+/* Perfil */
 .profile-header { display: flex; align-items: center; gap: 16px; }
 .profile-avatar { width: 60px; height: 60px; background: #C8102E; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
 .profile-title-container { flex: 1; }
-.logout-icon-btn { padding: 10px; background: white; border: 1px solid #E5E5EA; border-radius: 50%; cursor: pointer; font-size: 18px; }
+.logout-icon-btn { padding: 10px; background: white; border: 1px solid #E5E5EA; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
 body.accessible-mode .logout-icon-btn { background: #2C2C2E; border-color: white; }
 
-
+/* Menú inferior - Corregido a 'fixed' para un comportamiento óptimo en móviles */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -210,7 +212,7 @@ body.accessible-mode .bottom-nav { background: #1C1C1E; border-top: 2px solid #f
 body.accessible-mode .nav-item { color: #ffffff; }
 body.accessible-mode .nav-item.active { color: #D4AF37; }
 
-
+/* FAQ Flotante - Corregido a 'fixed' para pantallas móviles */
 .faq-floating-btn {
   position: fixed !important;
   right: 20px;
@@ -230,7 +232,7 @@ body.accessible-mode .nav-item.active { color: #D4AF37; }
 .faq-icon { width: 26px; height: 26px; object-fit: contain; }
 body.accessible-mode .faq-floating-btn { background: #D4AF37; border: 2px solid #ffffff; }
 
-
+/* Capas Modales Integradas */
 .custom-modal-overlay {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -250,7 +252,7 @@ body.accessible-mode .faq-floating-btn { background: #D4AF37; border: 2px solid 
 body.accessible-mode .custom-modal-box { background: #1C1C1E; border: 2px solid white; }
 body.accessible-mode .custom-modal-box h3, body.accessible-mode .custom-modal-box p { color: white; }
 
-
+/* Mensajes Toast */
 .custom-toast {
   position: absolute;
   bottom: 80px;
@@ -267,7 +269,7 @@ body.accessible-mode .custom-modal-box h3, body.accessible-mode .custom-modal-bo
   max-width: 85%;
 }
 
-
+/* Modos accesibles e inversión automática */
 body.accessible-mode .nav-icon,
 body.accessible-mode .dashboard-icon,
 body.accessible-mode .category-img,
@@ -284,8 +286,45 @@ body.accessible-mode .nav-item.active .nav-icon { filter: none; }
 .mt-2 { margin-top: 16px; }
 .mt-3 { margin-top: 24px; }
 
+/* ==========================================================================
+   ESTILOS COMPLEMENTARIOS: COMPONENTE ADMINISTRADOR (NUEVO)
+   ========================================================================== */
+#view-admin select {
+  font-family: inherit;
+  font-size: 13px;
+  background-color: #ffffff;
+  color: #1c1c1e;
+  transition: border-color 0.2s;
+}
 
+#view-admin select:focus {
+  border-color: #C8102E;
+  outline: none;
+}
 
+/* Soporte del contenedor de administración bajo el Modo Accesible */
+body.accessible-mode #view-admin div[style*="background: rgb(242, 242, 247)"],
+body.accessible-mode #view-admin div[style*="background: #f2f2f7"] {
+  background: #2c2c2e !important;
+  color: #ffffff !important;
+}
+
+body.accessible-mode #view-admin select {
+  background-color: #2c2c2e;
+  color: #ffffff;
+  border: 1px solid #ffffff !important;
+  font-size: 15px;
+  padding: 6px 12px !important;
+}
+
+body.accessible-mode #view-admin label {
+  color: #D4AF37 !important;
+  font-size: 15px;
+}
+
+/* ==========================================================================
+   ADAPTACIÓN PARA PANTALLAS GRANDES (PC / Escritorio)
+   ========================================================================== */
 @media (min-width: 768px) {
   body {
     background: #ebeeef;
@@ -294,19 +333,19 @@ body.accessible-mode .nav-item.active .nav-icon { filter: none; }
   }
 
   .app-container {
-    max-width: 800px; 
+    max-width: 800px; /* Ancho cómodo de lectura en PC */
     min-height: calc(100vh - 80px);
     border-radius: 24px;
     overflow: hidden;
   }
 
-
+  /* Las categorías se expanden a 3 columnas en PC en vez de 2 */
   .category-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
   }
 
-
+  /* Re-anclamos la navegación y el FAQ para quedarse fijos respecto a la app en PC */
   .bottom-nav {
     position: absolute;
     border-radius: 0 0 24px 24px;
