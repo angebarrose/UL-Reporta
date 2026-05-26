@@ -32,14 +32,14 @@
 
         <div id="loginError" class="alert hidden">
           <span>⚠️</span>
-          <p class="alert-text">Contraseña mínimo 4 caracteres</p>
+          <p class="alert-text" id="loginErrorText">Contraseña mínimo 4 caracteres</p>
         </div>
 
         <button type="submit" class="btn btn-primary btn-rounded">Iniciar sesión</button>
       </form>
 
       <p class="text-center mt-3 demo-text">
-        Demo: Cualquier email y contraseña (mín. 4 caracteres)
+        Demo Admin: admin@unlibre.edu.co | Clave: 1234
       </p>
     </section>
 
@@ -113,7 +113,6 @@
     <section id="view-tracking" class="page hidden">
       <h1 class="section-title">Mis Solicitudes</h1>
       <p id="tracking-counter" class="subtitle mb-3">Tienes 0 registros en total</p>
-
       <div id="requests-list-container"></div>
     </section>
 
@@ -173,7 +172,7 @@
 
         <div class="input-group">
           <label class="input-label">Correo Institucional</label>
-          <input type="email" id="profileEmail" class="input" placeholder="ejemplo@unlibre.edu.co">
+          <input type="email" id="profileEmail" class="input" placeholder="ejemplo@unlibre.edu.co" disabled>
         </div>
 
         <div class="input-group">
@@ -185,6 +184,22 @@
           💾 Guardar Cambios
         </button>
       </div>
+    </section>
+
+    <section id="view-admin" class="page hidden">
+      <div class="profile-header mb-4">
+        <div>
+          <h1 class="section-title" style="margin-bottom:0;">Panel de Control</h1>
+          <p class="subtitle">Administrador General UL-Reporta</p>
+        </div>
+        <button id="btn-logout-admin" class="logout-icon-btn" title="Cerrar Sesión">
+          <span>🚪</span>
+        </button>
+      </div>
+
+      <p id="admin-counter" class="subtitle mb-3">Cargando reportes globales...</p>
+      
+      <div id="admin-list-container"></div>
     </section>
 
     <nav id="app-bottom-nav" class="bottom-nav hidden">
