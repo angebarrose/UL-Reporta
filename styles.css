@@ -294,7 +294,7 @@ body.accessible-mode .nav-item.active .nav-icon { filter: none; }
   }
 
   .app-container {
-    max-width: 800px; /* Ancho cómodo de lectura en PC */
+    max-width: 800px; 
     min-height: calc(100vh - 80px);
     border-radius: 24px;
     overflow: hidden;
